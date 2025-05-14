@@ -1,7 +1,19 @@
 import json
 from pathlib import Path
+import random
+from datetime import datetime
+
 
 def simulate_data():
-    data = [{'value': i} for i in range(10)]
-    path = Path('app/data/simulated_data.json')
-    path.write_text(json.dumps(data, indent=2))
+    temperature_air = round(random.uniform(-10, 35), 1)
+    wind_speed = round(random.uniform(0, 100), 1)
+    temperature_cable = round(random.uniform(-5, 60), 1)
+
+    data = {
+        "temperature_air": temperature_air,
+        "wind_speed": wind_speed,
+        "temperature_cable": temperature_cable,
+        "timestamp": datetime.now().isoformat()
+    }
+
+    return data

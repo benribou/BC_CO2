@@ -3,7 +3,6 @@ from app.services.simulation import simulate_data
 
 router = APIRouter()
 
-@router.post('/')
+@router.get('/')
 def simulate():
-    simulate_data()
-    return {'message': 'Data simulated'}
+    return simulate_data()
