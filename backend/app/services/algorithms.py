@@ -1,6 +1,9 @@
 # tc temp cable = result
 from random import randint
+import numpy as np
+import time
 
+MINUTES_TO_MICRO = 60000000
 
 def algo_get_cable_temperature(temperature_cable: float, temperature_ambiant: float, wind_speed: float,
                                intensity: float) -> float:
@@ -29,11 +32,34 @@ def get_extrapolate_temperature(duration_minutes: int, cable_temperature: float,
     '''
     times = list(range(duration_minutes))
     temperatures = [cable_temperature]
+    print(f"Go To execute {duration_minutes} minutes = {duration_minutes * 60000000} micro second")
 
-    for _ in times[1:]:
+    for iter in times[1:]:
         current_temperature = temperatures[-1]
-        delta = algo_get_cable_temperature(current_temperature, ambient_temperature, wind_speed, intensity)
-        temperatures.append(round(current_temperature + delta, 1))
+        start_time = time.time()
+        print(f"Start : {start_time}")
+        print(f"Compute for {iter} minute")
+        micro_temp = []
+        for _ in range(MINUTES_TO_MICRO):
+            delta = algo_get_cable_temperature(current_temperature, ambient_temperature, wind_speed, intensity)
+            micro_temp.append(current_temperature + delta)
+
+        average = np.mean(micro_temp)
+        temperatures.append(round(average, 1))
+        end_time = time.time()
+        estimated_time_second = (end_time - start_time) * (len(times) - iter)
+        seconds = int(round(estimated_time_second % 60, 0))
+        minutes = int(round(estimated_time_second // 60, 0))
+
+        print(f"End, elapsed : {end_time - start_time}\nEstimated time : {minutes} mins, {seconds} seconds")
 
     return temperatures
 
+if __name__ == '__main__':
+    initial_temp = 25.0
+    ambient_temp = 20.0
+    wind_speed = 2.0
+    intensity = 1000
+    duration_minutes = 30
+
+    print(get_extrapolate_temperature(duration_minutes, initial_temp, ambient_temp, wind_speed, intensity))
