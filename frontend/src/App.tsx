@@ -1,69 +1,139 @@
-import { useState } from 'react';
+// src/App.tsx
+import { useState, useEffect } from 'react';
 import TemperatureChart from './components/TemperatureChart';
 import EnergyPanel from './components/EnergyPanel';
+import { useCarbonMeter } from './hooks/useCarbonMeter';
 
-function App() {
-  const [data, setData] = useState<{ minute: number; temperature: number }[]>([]);
-  const [energy, setEnergy] = useState<{ energyJoules: number; co2Grams: number } | null>(null);
+type TempPoint = { minute: number; temperature: number };
+type BackendStats = { energyJoules: number; co2Grams: number };
 
-  const handleFakePrediction = () => {
-    const simulatedTemps = Array.from({ length: 30 }, (_, i) => ({
+export default function App() {
+  const [data, setData] = useState<TempPoint[]>([]);
+  const [backendStats, setBackendStats] = useState<BackendStats | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // stats front
+  const { energyJoules: frontJ, co2Grams: frontCO2 } = useCarbonMeter(500);
+
+  // génère un jeu « neutre » au montage
+  useEffect(() => {
+    setData(Array.from({ length: 30 }, (_, i) => ({
       minute: i,
-      temperature: 25 + Math.sin(i / 4) * 3 + i * 0.1,
-    }));
+      temperature: 25,
+    })));
+  }, []);
 
-    const simulatedEnergy = {
-      energyJoules: 5 + Math.random() * 2,
-      co2Grams: 1 + Math.random() * 0.5,
+// src/App.tsx (extrait de handleLaunch)
+const handleLaunch = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch('/api/simulate', { method: 'POST' });
+    if (!res.ok) throw new Error('Not implemented');
+    const json = await res.json() as {
+      temperatures: TempPoint[];
+      energyJoules: number;
+      co2Grams: number;
     };
+    setData(json.temperatures);
+    setBackendStats({
+      energyJoules: json.energyJoules,
+      co2Grams: json.co2Grams,
+    });
 
-    setData(simulatedTemps);
-    setEnergy(simulatedEnergy);
-  };
+  } catch (err) {
+    console.warn('Backend simulate not available, falling back to mock', err);
+
+    // --- MOCK ---
+    await new Promise((r) => setTimeout(r, 2000)); 
+    const fakeTemps = Array.from({ length: 30 }, (_, i) => ({
+      minute: i,
+      temperature: 25 + Math.cos(i / 5) * 2,
+    }));
+    setData(fakeTemps);
+    setBackendStats({
+      energyJoules: 1200 + Math.random() * 400,
+      co2Grams: 0.8 + Math.random() * 0.4,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div style={{
       width: '100vw',
       minHeight: '100vh',
       backgroundColor: '#12121b',
-      color: '#ffffff',
+      color: '#fff',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'flex-start',
       padding: '2rem',
-      fontFamily: 'Arial, sans-serif',
       boxSizing: 'border-box',
     }}>
-      <h1 style={{ marginBottom: '1.5rem', fontSize: '2rem' }}>🌡️ Simulation de température</h1>
+      <h1 style={{ marginBottom: '1.5rem', fontSize: '2rem' }}>
+        🌡️ Simulation de température
+      </h1>
 
       <button
-        onClick={handleFakePrediction}
+        onClick={handleLaunch}
+        disabled={loading}
         style={{
-          backgroundColor: '#00c6ff',
+          backgroundColor: loading ? '#555' : '#00c6ff',
           color: '#fff',
-          border: 'none',
           padding: '0.7rem 1.5rem',
           borderRadius: '999px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          boxShadow: '0 0 15px rgba(0,198,255,0.4)',
-          marginBottom: '2rem'
+          border: 'none',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          marginBottom: '2rem',
+          position: 'relative',
         }}
       >
-        Lancer la simulation
+        {loading
+          ? <span style={{
+              width: '1em', height: '1em', border: '2px solid #fff',
+              borderTop: '2px solid transparent', borderRadius: '50%',
+              display: 'inline-block', animation: 'spin 1s linear infinite'
+            }} />
+          : 'Lancer la simulation'}
       </button>
 
-      <div style={{ width: '100%', maxWidth: '1200px', padding: '0 1rem' }}>
-        {data.length > 0 && (
-          <>
-            <TemperatureChart data={data} />
-            {energy && <EnergyPanel {...energy} />}
-          </>
-        )}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg) }
+          to   { transform: rotate(360deg) }
+        }
+      `}</style>
+
+      <div style={{
+        width: '100%', maxWidth: 1200, padding: '0 1rem',
+        display: 'grid', gridTemplateColumns: '1fr', gap: '2rem'
+      }}>
+        <TemperatureChart data={data} />
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: backendStats ? '1fr 1fr' : '1fr',
+          gap: '1rem'
+        }}>
+          <EnergyPanel
+            title="Front-end"
+            energyJoules={frontJ}
+            co2Grams={parseFloat(frontCO2.toFixed(4))}
+            accentColor="#00c6ff"
+          />
+
+          {backendStats && (
+            <EnergyPanel
+              title="Back-end"
+              energyJoules={backendStats.energyJoules}
+              co2Grams={parseFloat(backendStats.co2Grams.toFixed(4))}
+              accentColor="#ff6b6b"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
-export default App;
