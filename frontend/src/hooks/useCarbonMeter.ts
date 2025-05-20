@@ -1,6 +1,7 @@
 // src/hooks/useCarbonMeter.ts
 import { useState, useEffect, useRef } from 'react';
-import { co2 as CO2, CO2EstimateComponents } from '@tgwf/co2';
+import { co2 as CO2 } from '@tgwf/co2';
+
 
 export type CarbonStats = {
   energyJoules: number;
