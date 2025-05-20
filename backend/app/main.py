@@ -6,7 +6,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # adapte à ton URL React
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -14,3 +14,4 @@ app.add_middleware(
 
 app.include_router(simulator.router, prefix='/simulate', tags=['Simulation'])
 app.include_router(reader.router, prefix='/read', tags=['Reading'])
+app.include_router(reader.router, prefix='/emissions', tags=['Emissions'])
