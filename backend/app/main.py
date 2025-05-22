@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import simulator, reader
+from app.api import simulator, reader, compute
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -14,3 +14,4 @@ app.add_middleware(
 
 app.include_router(simulator.router, prefix='/simulate', tags=['Simulation'])
 app.include_router(reader.router, prefix='/read', tags=['Reading'])
+app.include_router(compute.router, prefix='/compute', tags=['Computing'])

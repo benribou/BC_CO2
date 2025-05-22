@@ -1,0 +1,8 @@
+**/__pycache__
+.venv
+.env
+build
+pyproject.toml
+uv.lock
+**.c
+**.pyd

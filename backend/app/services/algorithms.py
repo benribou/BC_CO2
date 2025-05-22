@@ -2,9 +2,12 @@
 from random import randint
 import numpy as np
 import time
+from numba import njit
 
 MINUTES_TO_MICRO = 60000000
 
+
+@njit
 def simulate_temperature_opti(duration_min: int,
                               initial_temp: float,
                               ambient_temp: float,
