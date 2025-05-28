@@ -6,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from codecarbon import EmissionsTracker
 
 from app.services.algorithms import simulate_temperature_opti
+from app.services.romina import simulate_temperature_loop
 from app.services.simulation import simulate_data
 
 router = APIRouter()
@@ -59,14 +60,21 @@ def compute():
 
 if __name__ == '__main__':
     DUREE = 30
-    T0 = 47.9
+    # T0 = 47.9
+    # T_AMBIENT = 20.0
+    # VENT = 2.0
+    # I = 1000.0
+
+    T0 = 25
     T_AMBIENT = 20.0
-    VENT = 2.0
-    I = 1000.0
+    VENT = 1.0
+    I = 100.0
 
     tracker = EmissionsTracker()
     tracker.start()
-    value = simulate_temperature_opti(DUREE, T0, T_AMBIENT, VENT, I)
+    # value = simulate_temperature_opti(DUREE, T0, T_AMBIENT, VENT, I)
+    value = simulate_temperature_loop(T0, T_AMBIENT, VENT, I)
     emission = tracker.stop()
     print(emission)
+    print(value)
 

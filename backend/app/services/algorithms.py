@@ -5,6 +5,7 @@ import time
 from numba import njit
 
 MINUTES_TO_MICRO = 60000000
+SECONDS_TO_MICRO = 1e-6
 
 
 @njit
@@ -27,14 +28,17 @@ def simulate_temperature_opti(duration_min: int,
     temperatures = []
     current_temp = initial_temp
 
-    first = (-(wind_speed ** 2 / 1600 * 0.4) - 0.1)
-    intensity_term = (intensity ** 1.4 / 73785) * 130
+    cooling_factor = (-(wind_speed ** 2 / 1600 * 0.4) - 0.1)
+    heating_term = (intensity ** 1.4 / 73785) * 130
 
-    for _ in range(1, duration_min + 1):
-        for _ in range(MINUTES_TO_MICRO):
-            second = (current_temp - ambient_temp - intensity_term)
-            delta = first * second
-            current_temp += delta
+    seconds_per_minute = 60
+    time_step = 1.0
+    thermal_inertia = 0.01
+
+    for _ in range(duration_min):
+        for _ in range(seconds_per_minute):
+            delta = cooling_factor * (current_temp - (ambient_temp + heating_term))
+            current_temp += delta * time_step * thermal_inertia
         temperatures.append(round(current_temp, 1))
 
     return temperatures
