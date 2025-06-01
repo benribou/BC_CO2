@@ -72,8 +72,8 @@ if __name__ == '__main__':
 
     tracker = EmissionsTracker()
     tracker.start()
-    # value = simulate_temperature_opti(DUREE, T0, T_AMBIENT, VENT, I)
-    value = simulate_temperature_loop(T0, T_AMBIENT, VENT, I)
+    value = simulate_temperature_opti(DUREE, T0, T_AMBIENT, VENT, I)
+    # value = simulate_temperature_loop(T0, T_AMBIENT, VENT, I)
     emission = tracker.stop()
     print(emission)
     print(value)

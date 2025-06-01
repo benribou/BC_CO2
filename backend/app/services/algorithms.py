@@ -38,7 +38,7 @@ def simulate_temperature_opti(duration_min: int,
     for _ in range(duration_min):
         for _ in range(seconds_per_minute):
             delta = cooling_factor * (current_temp - (ambient_temp + heating_term))
-            current_temp += delta * time_step * thermal_inertia
+            current_temp += delta * thermal_inertia
         temperatures.append(round(current_temp, 1))
 
     return temperatures
