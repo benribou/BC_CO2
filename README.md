@@ -1,6 +1,6 @@
-# 🌍 EcoSimulator
+# 🌍 Econum
 
-Ce projet propose une application web permettant de **simuler l'évolution de la température d'un câble électrique** et de mesurer l'empreinte carbone (énergie consommée et émissions CO₂) du front-end et du back-end.
+Ce projet propose une application web permettant de **suivre l'évolution de la température d'un câble électrique** et de mesurer l'empreinte carbone (énergie consommée et émissions CO₂) du front-end et du back-end
 
 ---
 
