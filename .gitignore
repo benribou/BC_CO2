@@ -6,3 +6,4 @@ pyproject.toml
 uv.lock
 **.c
 **.pyd
+__pycache__/
