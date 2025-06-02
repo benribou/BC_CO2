@@ -24,7 +24,6 @@ export default function TemperatureChart({ data }: Props) {
       marginBottom: '2rem'
     }}>
       <h2 style={{ marginBottom: '1rem', color: '#fff' }}>Évolution de la température</h2>
-
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={data}>
           <defs>
@@ -33,12 +32,10 @@ export default function TemperatureChart({ data }: Props) {
               <stop offset="95%" stopColor="#0072ff" stopOpacity={0}/>
             </linearGradient>
           </defs>
-
           <XAxis dataKey="minute" stroke="#aaa" />
           <YAxis stroke="#aaa" />
           <CartesianGrid strokeDasharray="3 3" stroke="#2c2c3d" />
           <Tooltip contentStyle={{ backgroundColor: '#2c2c3d', border: 'none', color: '#fff' }} />
-          
           <Area
             type="monotone"
             dataKey="temperature"
