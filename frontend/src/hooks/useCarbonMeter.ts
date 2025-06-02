@@ -1,7 +1,6 @@
 // src/hooks/useCarbonMeter.ts
-import { useState, useEffect, useRef } from 'react';
-import { co2 as CO2 } from '@tgwf/co2';
-
+import { useState, useEffect, useRef } from "react";
+import { co2 as CO2 } from "@tgwf/co2";
 
 export type CarbonStats = {
   energyJoules: number;
@@ -16,7 +15,9 @@ export function useCarbonMeter(pollInterval = 1000): CarbonStats {
     co2Grams: 0,
   });
 
-  const meterRef = useRef(new CO2({ country: 'FR', year: new Date().getFullYear() }));
+  const meterRef = useRef(
+    new CO2({ country: "FR", year: new Date().getFullYear() })
+  );
   const bytesSoFar = useRef(0);
   const gramsSoFar = useRef(0);
 
@@ -32,12 +33,17 @@ export function useCarbonMeter(pollInterval = 1000): CarbonStats {
 
       // perByte peut renvoyer un number ou un objet CO2EstimateComponents
       const raw = meterRef.current.perByte(bytes, false);
-      const delta = typeof raw === 'number'
-        ? raw
-        : // si objet, on prend la prop grams ou co2
-          ('grams' in raw ? raw.grams : ('co2' in raw ? raw.co2 : 0));
+      const delta =
+        typeof raw === "number"
+          ? raw
+          : // si objet, on prend la prop grams ou co2
+          "grams" in raw
+          ? raw.grams
+          : "co2" in raw
+          ? raw.co2
+          : 0;
 
-      gramsSoFar.current += delta;
+      gramsSoFar.current += Number(delta);
       return response;
     };
 
